@@ -8,18 +8,7 @@ cloudinary.config({
   api_secret: process.env.cloudSecret 
 });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folder = file.fieldname === 'image' ? '/tmp/uploads/images' : '/tmp/uploads/files';
-    cb(null, folder);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const fileExtension = path.extname(file.originalname);
-    const publicId = `file-${uniqueSuffix}`;
-    cb(null, publicId + fileExtension);
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const allowedImageTypes = ['image/jpeg', 'image/png'];
@@ -36,7 +25,6 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter }).single('image');
 
-// Handle the file upload request
 exports.upload = (req, res, next) => {
   upload(req, res, (error) => {
     if (error) {
@@ -44,17 +32,15 @@ exports.upload = (req, res, next) => {
       return res.status(400).json({ error: 'File upload failed.' });
     }
 
-    // File upload to Cloudinary
     if (req.file) {
-      const { path } = req.file;
-      cloudinary.uploader.upload(path, { public_id: req.file.filename }, (error, result) => {
+      cloudinary.uploader.upload_stream({ public_id: req.file.filename }, (error, result) => {
         if (error) {
           console.log({ error });
           return res.status(400).json({ error: 'File upload to Cloudinary failed.' });
         }
         req.file.cloudinaryUrl = result.secure_url;
         next();
-      });
+      }).end(req.file.buffer);
     } else {
       next();
     }

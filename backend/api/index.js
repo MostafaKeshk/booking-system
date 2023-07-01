@@ -7,7 +7,7 @@ const reservationRoutes = require('../routes/reservationRoutes.js');
 const reviewRoutes = require('../routes/reviewRoutes.js');
 const authentication = require('../middleware/authentication.js');
 const { connectToDB } = require("../utils/connectToDB.js");
-const { upload } = require("../utils/upload.js");
+const { upload } = require("../middleware/upload.js");
 
 require("dotenv").config();
 
