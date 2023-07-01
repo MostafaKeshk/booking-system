@@ -1,7 +1,6 @@
 const multer = require('multer');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
-require("dotenv").config();
 
 cloudinary.config({ 
   cloud_name: process.env.cloudName, 
@@ -11,7 +10,7 @@ cloudinary.config({
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const folder = file.fieldname === 'image' ? 'uploads/images' : 'uploads/files';
+    const folder = file.fieldname === 'image' ? '/tmp/uploads/images' : '/tmp/uploads/files';
     cb(null, folder);
   },
   filename: (req, file, cb) => {
