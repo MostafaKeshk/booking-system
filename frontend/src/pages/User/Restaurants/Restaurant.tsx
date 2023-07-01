@@ -33,7 +33,7 @@ const UserRestaurant = () => {
     setDate,
   } = useUserRestaurantContainer(restaurantId);
   const { user } = useAuth();
-  console.log(restaurant);
+
   return (
     <Container maxWidth="xl">
       {pageLoading ? (
